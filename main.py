@@ -327,9 +327,9 @@ def randomWalk():
 
 while 1:
     print('-' * 30 + '软件工程实验一结对编程部分' + '-' * 30)
-    print('*' + ' ' * 20 + '1.生成有向图' + ' ' * 15 + '2.展示有向图' + ' ' * 20 + '*')
-    print('*' + ' ' * 20 + '3.查询桥接词' + ' ' * 15 + '4.生成新文本' + ' ' * 20 + '*')
-    print('*' + ' ' * 21 + '5.最短路径' + ' ' * 16 + '6.随机游走' + ' ' * 22 + '*')
+    print('*' + ' ' * 20 + '1.generate graph' + ' ' * 15 + '2.show graph' + ' ' * 17 + '*')
+    print('*' + ' ' * 20 + '3.query bridge word' + ' ' * 12 + '4.generate new text' + ' ' * 10 + '*')
+    print('*' + ' ' * 20 + '5.shortest path' + ' ' * 16 + '6.random walk' + ' ' * 16 + '*')
     print('-' * 81)
     action = input('请输入您需使用的功能(输入q退出)：')
     G = generateDirectedGraph(result)
