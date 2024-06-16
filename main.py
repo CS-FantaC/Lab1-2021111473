@@ -1,12 +1,12 @@
 import re
+import random
 from matplotlib import pyplot as plt
 import networkx as nx
-import random
 import numpy as np
 
 wordsRegex = re.compile(r'\w+')
 twoWordsRegex = re.compile(r'\w+[ ]\w+')
-with open('text.txt', 'r') as f:
+with open('text.txt', 'r', encoding='utf-8') as f:
     text = f.read()
 
 result = wordsRegex.findall(text)
@@ -44,6 +44,7 @@ class DirectedGraph:
         for node in self.nodes:
             if node.value == value:
                 return node
+        return None
 
     def searchNodeById(self, id):
         for node in self.nodes:
@@ -77,7 +78,8 @@ class DirectedGraph:
         #             print(next_word.value, end=', ')
         #     print('')
         for connection in self.connections:
-            print(f'{connection.node1.value} -> {connection.node2.value}, weight: {connection.weight}')
+            print(f'{connection.node1.value} -> {connection.node2.value}, '
+                  f'weight: {connection.weight}')
 
 
 def generateDirectedGraph(textlist):
@@ -100,13 +102,13 @@ def generateDirectedGraph(textlist):
 
 
 def showDirectedGraph(G, node_path=None, edge_path=None):
-    if node_path == None or edge_path == None:
+    if node_path is None or edge_path is None:
         G2 = nx.DiGraph()
         for connection in G.connections:
             G2.add_edge(connection.node1.value, connection.node2.value, weight=connection.weight)
 
         pos = nx.kamada_kawai_layout(G2)
-        nx.draw_networkx(G2, pos=pos, with_labels=True, alpha=0.5, font_size=8)
+        nx.draw_networkx(G2, pos=pos, with_labels=True, alpha=0.5, font_size=9)
         labels = nx.get_edge_attributes(G2, 'weight')
         nx.draw_networkx_edge_labels(G2, pos, edge_labels=labels)
         plt.savefig('graph.png')
@@ -131,7 +133,8 @@ def showDirectedGraph(G, node_path=None, edge_path=None):
         blue_edges = []
         for connection in G.connections:
             if connection in edge_path:
-                red_edges.append((connection.node1.value, connection.node2.value, connection.weight))
+                red_edges.append((connection.node1.value,
+                                  connection.node2.value, connection.weight))
             else:
                 blue_edges.append((connection.node1.value, connection.node2.value, connection.weight))
 
@@ -158,13 +161,13 @@ def queryBridgeWords(word1, word2):
     node1 = G.searchNodeByValue(word1)
     node2 = G.searchNodeByValue(word2)
 
-    if node1 == None or node2 == None:
-        if node1 == None and node2 == None:
+    if node1 is None or node2 is None:
+        if node1 is None and node2 is None:
             print(f"No '{word1}' and '{word2}' in the graph!")
         else:
-            if node1 == None:
+            if node1 is None:
                 print(f"No '{word1}' in the graph!")
-            if node2 == None:
+            if node2 is None:
                 print(f"No '{word2}' in the graph!")
         return 0
 
@@ -173,14 +176,14 @@ def queryBridgeWords(word1, word2):
         if node in node1.next and node2 in node.next:
             bridge_words.append(node.value)
 
-    if bridge_words == []:
+    if not bridge_words :
         print(f"No bridge words from '{word1}' to '{word2}'!")
     else:
         print(f"The bridge words from '{word1}' to '{word2}' is : ", end='')
         for bridge_word in bridge_words:
             print(f"'{bridge_word}'", end='')
         print('')
-
+    return None
 
 def searchBridgeWords(word1, word2):
     node1 = G.searchNodeByValue(word1)
@@ -215,13 +218,13 @@ def calcShortestPath(word1, word2):
     node1 = G.searchNodeByValue(word1)
     node2 = G.searchNodeByValue(word2)
 
-    if node1 == None or node2 == None:
-        if node1 == None and node2 == None:
+    if node1 is None or node2 is None:
+        if node1 is None and node2 is None:
             print(f"No '{word1}' and '{word2}' in the graph!")
         else:
-            if node1 == None:
+            if node1 is None:
                 print(f"No '{word1}' in the graph!")
-            if node2 == None:
+            if node2 is None:
                 print(f"No '{word2}' in the graph!")
         return 0
 
@@ -285,7 +288,8 @@ def calcShortestPath(word1, word2):
 
     edge_path = []
     for i in range(len(node_path) - 1):
-        edge_path.append(G.searchConnection(G.searchNodeByValue(node_path[i]), G.searchNodeByValue(node_path[i + 1])))
+        edge_path.append(G.searchConnection(G.searchNodeByValue(node_path[i]),
+                                            G.searchNodeByValue(node_path[i + 1])))
 
     length = 0
     for edge in edge_path:
@@ -325,70 +329,73 @@ def randomWalk():
     return nodes_passed
 
 
-while 1:
-    print('-' * 30 + '软件工程实验一结对编程部分' + '-' * 30)
-    print('*' + ' ' * 20 + '1.generate graph' + ' ' * 15 + '2.show graph' + ' ' * 17 + '*')
-    print('*' + ' ' * 20 + '3.query bridge word' + ' ' * 12 + '4.generate new text' + ' ' * 10 + '*')
-    print('*' + ' ' * 20 + '5.shortest path' + ' ' * 16 + '6.random walk' + ' ' * 16 + '*')
-    print('-' * 81)
-    action = input('请输入您需使用的功能(输入q退出)：')
-    G = generateDirectedGraph(result)
-    if action == '1':
-        print('DirectedGraph generated!')
-    elif action == '2':
-        showDirectedGraph(G)
-    elif action == '3':
-        content = twoWordsRegex.match(input("Please enter two words separated by space :"))
-        while content == None:
-            content = twoWordsRegex.match(input("Please enter two words separated by space :"))
-        word1, word2 = content.group().split(' ')
-        word1 = word1.strip()
-        word2 = word2.strip()
+G = generateDirectedGraph(result)  # test
 
-        queryBridgeWords(word1, word2)
-    elif action == '4':
-        inputText = input("Please enter a few words :")
-        for word in generateNewText(inputText):
-            print(word, end=' ')
-        print('')
-    elif action == '5':
-        content = twoWordsRegex.match(input("Please enter two words separated by space :"))
-        while content == None:
+if __name__ == "__main__":
+    while 1:
+        print('-' * 30 + '软件工程实验一结对编程部分' + '-' * 30)
+        print('*' + ' ' * 20 + '1.generate graph' + ' ' * 15 + '2.show graph' + ' ' * 17 + '*')
+        print('*' + ' ' * 20 + '3.query bridge word' + ' ' * 12 + '4.generate new text' + ' ' * 10 + '*')
+        print('*' + ' ' * 20 + '5.shortest path' + ' ' * 16 + '6.random walk' + ' ' * 16 + '*')
+        print('-' * 81)
+        action = input('请输入您需使用的功能(输入q退出)：')
+        G = generateDirectedGraph(result)
+        if action == '1':
+            print('DirectedGraph generated!')
+        elif action == '2':
+            showDirectedGraph(G)
+        elif action == '3':
             content = twoWordsRegex.match(input("Please enter two words separated by space :"))
-        word1, word2 = content.group().split(' ')
-        word1 = word1.strip()
-        word2 = word2.strip()
-        if word1 == word2:
-            print(word1)
-            print("Shortest path length: 0")
-            node_path = [word1]
-            showDirectedGraph(G, node_path, edge_path=[])
+            while content is None:
+                content = twoWordsRegex.match(input("Please enter two words separated by space :"))
+            word1, word2 = content.group().split(' ')
+            word1 = word1.strip()
+            word2 = word2.strip()
+
+            queryBridgeWords(word1, word2)
+        elif action == '4':
+            inputText = input("Please enter a few words :")
+            for word in generateNewText(inputText):
+                print(word, end=' ')
+            print('')
+        elif action == '5':
+            content = twoWordsRegex.match(input("Please enter two words separated by space :"))
+            while content == None:
+                content = twoWordsRegex.match(input("Please enter two words separated by space :"))
+            word1, word2 = content.group().split(' ')
+            word1 = word1.strip()
+            word2 = word2.strip()
+            if word1 == word2:
+                print(word1)
+                print("Shortest path length: 0")
+                node_path = [word1]
+                showDirectedGraph(G, node_path, edge_path=[])
+                continue
+
+            if calcShortestPath(word1, word2) != 0:
+                node_path, edge_path, length = calcShortestPath(word1, word2)
+                for node in node_path:
+                    print(node, end=' ')
+                print('')
+                print(f"Shortest path length: {length}")
+
+                showDirectedGraph(G, node_path, edge_path)
+
+        elif action == '6':
+            string = ''
+            node_passed_list = randomWalk()
+            if node_passed_list != 0:
+                for node in node_passed_list:
+                    string += str(node.value + ' ')
+                    print(node.value, end=' ')
+                print('')
+            string.strip()
+
+            with open('randomWalk.txt', 'w') as f:
+                f.write(string)
+            f.close()
+        elif action == 'q':
+            break
+        else:
+            print('请输入1-8使用该系统或输入q退出')
             continue
-
-        if calcShortestPath(word1, word2) != 0:
-            node_path, edge_path, length = calcShortestPath(word1, word2)
-            for node in node_path:
-                print(node, end=' ')
-            print('')
-            print(f"Shortest path length: {length}")
-
-            showDirectedGraph(G, node_path, edge_path)
-
-    elif action == '6':
-        string = ''
-        node_passed_list = randomWalk()
-        if node_passed_list != 0:
-            for node in node_passed_list:
-                string += str(node.value + ' ')
-                print(node.value, end=' ')
-            print('')
-        string.strip()
-
-        with open('randomWalk.txt', 'w') as f:
-            f.write(string)
-        f.close()
-    elif action == 'q':
-        break
-    else:
-        print('请输入1-8使用该系统或输入q退出')
-        continue
